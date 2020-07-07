@@ -32,8 +32,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install mariadb-server-10.3
         
-        
         sudo apt-get install libmysqlclient-dev
+        sudo cat /etc/mysql/my.cnf
         sudo echo "[mysqld]" >> /etc/mysql/my.cnf
         sudo echo    "character-set-client-handshake = FALSE">> /etc/mysql/my.cnf
         sudo echo    "character-set-server = utf8mb4">> /etc/mysql/my.cnf
