@@ -33,6 +33,7 @@ jobs:
         sudo apt-get install mariadb-server-10.3
         
         sudo apt-get install libmysqlclient-dev
+        chown 1001:1001 -R ./etc/mysql
         sudo cat /etc/mysql/my.cnf
         sudo echo "[mysqld]" >> /etc/mysql/my.cnf
         sudo echo    "character-set-client-handshake = FALSE">> /etc/mysql/my.cnf
