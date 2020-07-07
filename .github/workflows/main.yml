@@ -34,12 +34,12 @@ jobs:
         
         
         sudo apt-get install libmysqlclient-dev
-        echo "[mysqld]" >> /etc/mysql/my.cnf
-        echo    "character-set-client-handshake = FALSE">> /etc/mysql/my.cnf
-        echo    "character-set-server = utf8mb4">> /etc/mysql/my.cnf
-        echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
-        echo    "[mysql]">> /etc/mysql/my.cnf
-        echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
+        sudo echo "[mysqld]" >> /etc/mysql/my.cnf
+        sudo echo    "character-set-client-handshake = FALSE">> /etc/mysql/my.cnf
+        sudo echo    "character-set-server = utf8mb4">> /etc/mysql/my.cnf
+        sudo echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
+        sudo echo    "[mysql]">> /etc/mysql/my.cnf
+        sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
         sudo service mysql restart
         python -m pip install --upgrade pip
