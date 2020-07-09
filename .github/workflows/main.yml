@@ -66,11 +66,8 @@ jobs:
         pip3 install wheel
         pip install wheel
         pip3 install frappe-bench
-        export PATH=$PATH:/home/runner/.local/bin
-        /home/runner/.local/bin/bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-       
-        cd frappe-bench
-
-        ls
+        export PATH=$PATH:~/.local/bin
+        bench --version
+        
        
         
