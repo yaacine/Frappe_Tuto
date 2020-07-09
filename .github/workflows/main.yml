@@ -58,10 +58,7 @@ jobs:
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
-        
-        sudo chown mysql:mysql /etc/mysql/my.cnf
-        sudo chmod 777 /etc/mysql/my.cnf
-        service mysql start
+        sudo service mysql restart
         sudo systemctl stop mariadb
         sudo mysqld_safe --skip-grant-tables &
         mysql -u root <<<"
