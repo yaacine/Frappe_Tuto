@@ -68,6 +68,7 @@ jobs:
         pip3 install frappe-bench
         echo $PATH
         echo “export PATH=’$HOMEPATH/.local/bin:$PATH’” >> ~/.bashrc
+        echo $PATH
         sudo bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
 
@@ -80,3 +81,5 @@ jobs:
   
         
         
+
+        /usr/share/rust/.cargo/bin:/home/runner/.config/composer/vendor/bin:/home/runner/.dotnet/tools:/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin
