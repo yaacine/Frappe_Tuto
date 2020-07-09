@@ -40,8 +40,8 @@ jobs:
         sudo apt-get install mariadb-server-10.3
 
         export DEBIAN_FRONTEND=noninteractive
-        debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
-        debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
         
 
         sudo apt-get install libmysqlclient-dev
