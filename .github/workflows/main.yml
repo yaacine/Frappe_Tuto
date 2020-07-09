@@ -35,9 +35,6 @@ jobs:
         sudo apt-get install python3-setuptools python3-pip
         sudo apt-get install virtualenv
 
-        export DEBIAN_FRONTEND=noninteractive
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
         
 
         sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
@@ -45,6 +42,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install mariadb-server-10.3
 
+        export DEBIAN_FRONTEND=noninteractive
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
+        
        
 
         sudo apt-get install libmysqlclient-dev
@@ -72,7 +73,7 @@ jobs:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
         cd frappe-bench
-        bench new-site example.com --mariadb-root-password frappe  --db-password frappe
+        bench new-site example.com --mariadb-root-password frappe  --db-password frappe --admin-password frappe --force
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
