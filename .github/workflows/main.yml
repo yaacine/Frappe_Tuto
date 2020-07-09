@@ -76,7 +76,12 @@ jobs:
         
         
         sudo systemctl stop mariadb
+        
+        echo "#############################################"
+        echo "         Maria Db configuration started         "
+        echo "#############################################"
         sudo mysqld_safe --skip-grant-tables &
+        
         mysql -u root <<<"
         UPDATE mysql.user SET Password='frappe' WHERE User='root';
         DELETE FROM mysql.user WHERE User='';
