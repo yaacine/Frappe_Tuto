@@ -75,7 +75,7 @@ jobs:
         sudo ls -alt /home/runner/work/Frappe_Tuto/Frappe_Tuto
         echo "ls  -alt /home/runner "
         sudo ls  -alt /home/runner
-        sudo echo “export PATH=’$HOME/.local/bin:$PATH’” >> ~/.bashrc
+        sudo echo “export PATH=’/home/runner/.local/bin:$PATH’” >> ~/.bashrc
         echo $PATH
         sudo bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
