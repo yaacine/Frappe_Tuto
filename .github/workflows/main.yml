@@ -58,6 +58,27 @@ jobs:
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
+        
+        sudo chown mysql:mysql /etc/mysql/my.cnf
+        sudo chmod 777 /etc/mysql/my.cnf
+        sudo systemctl stop mariadb
+        sudo mysqld_safe --skip-grant-tables &
+        mysql -u root <<_EOF_
+        UPDATE mysql.user SET Password='frappe' WHERE User='root';
+        DELETE FROM mysql.user WHERE User='';
+        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+        DROP DATABASE IF EXISTS test;
+        DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+        FLUSH PRIVILEGES;
+        _EOF_
+        
+        sudo systemctl start mariadb
+        echo "#############################################"
+        echo "         Maria Db configuration done         "
+        echo "#############################################"
+        
+       
+        echo "bench install finished with success --yacine"
         echo "tail /etc/mysql/my.conf --yacine"
         tail /etc/mysql/my.cnf
         
@@ -74,19 +95,6 @@ jobs:
         export PATH=$PATH:~/.local/bin
         bench --version
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-
-        sudo systemctl stop mariadb
-        sudo mysqld_safe --skip-grant-tables &
-        mysql -u root <<_EOF_
-        UPDATE mysql.user SET Password='frappe' WHERE User='root';
-        DELETE FROM mysql.user WHERE User='';
-        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-        DROP DATABASE IF EXISTS test;
-        DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-        FLUSH PRIVILEGES;
-        _EOF_
-        sudo systemctl start mariadb
-        echo "bench install finished with success --yacine"
 
         cd frappe-bench
         ls -alt
