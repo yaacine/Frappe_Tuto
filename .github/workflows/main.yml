@@ -49,6 +49,7 @@ jobs:
        
 
         sudo apt-get install libmysqlclient-dev
+        
         sudo chmod 777 /etc/mysql/my.cnf
         sudo cat /etc/mysql/my.cnf
         sudo echo "[mysqld]" >> /etc/mysql/my.cnf
@@ -95,16 +96,7 @@ jobs:
          echo "#############################################"
         echo "         restarted mysql service.            "
         echo "#############################################"
-        sudo mysqld_safe --skip-grant-tables &
-        
-        mysql -uroot <<<"
-        UPDATE mysql.user SET Password='frappe' WHERE User='root';
-        DELETE FROM mysql.user WHERE User='';
-        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-        DROP DATABASE IF EXISTS test;
-        DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-        FLUSH PRIVILEGES;
-        "
+       
         
         sudo systemctl start mariadb
         echo "#############################################"
@@ -119,7 +111,7 @@ jobs:
 
         cd frappe-bench
         ls -alt
-        bench new-site example.com --mariadb-root-password frappe  --db-password frappe --admin-password frappe --force
+        bench new-site example.com --mariadb-root-password zk0iGBTpOwStME0q  --db-password zk0iGBTpOwStME0q --admin-password frappe --force
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
