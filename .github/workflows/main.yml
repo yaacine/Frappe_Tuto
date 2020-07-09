@@ -58,8 +58,11 @@ jobs:
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
+        echo "tail /etc/mysql/my.conf --yacine"
+        tail /etc/mysql/my.conf
         
         sudo service mysql restart
+
         sudo apt-get install redis-server
         sudo apt-get install curl
         curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -72,7 +75,9 @@ jobs:
         bench --version
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
+        echo "bench install finished with success --yacine"
         cd frappe-bench
+
         bench new-site example.com --mariadb-root-password frappe  --db-password frappe --admin-password frappe --force
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
