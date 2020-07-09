@@ -57,8 +57,24 @@ jobs:
         sudo echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
+
+        echo "tail /etc/mysql/my.conf --yacine"
+        tail /etc/mysql/my.cnf
         
         sudo service mysql restart
+
+        sudo apt-get install redis-server
+        sudo apt-get install curl
+        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        sudo apt install yarn
+        pip3 install wheel
+        pip install wheel
+        pip3 install frappe-bench
+        export PATH=$PATH:~/.local/bin
+        bench --version
+        
+        
         sudo systemctl stop mariadb
         sudo mysqld_safe --skip-grant-tables &
         mysql -u root <<<"
@@ -77,21 +93,8 @@ jobs:
         
        
         echo "bench install finished with success --yacine"
-        echo "tail /etc/mysql/my.conf --yacine"
-        tail /etc/mysql/my.cnf
         
-        sudo service mysql restart
-
-        sudo apt-get install redis-server
-        sudo apt-get install curl
-        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        sudo apt install yarn
-        pip3 install wheel
-        pip install wheel
-        pip3 install frappe-bench
-        export PATH=$PATH:~/.local/bin
-        bench --version
+        
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
         cd frappe-bench
