@@ -64,6 +64,7 @@ jobs:
         sudo apt-get install -y nodejs
         sudo apt install yarn
         pip3 install wheel
+        pip install wheel
         pip3 install frappe-bench 
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
