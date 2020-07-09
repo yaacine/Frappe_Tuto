@@ -25,13 +25,25 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run a multi-line script
       run: |
+        alias python=python3
+        alias pip=pip3
         sudo apt install git python-dev redis-server
         sudo apt-get install software-properties-common
+        sudo apt-get install python3-dev
+        sudo apt-get install python3-setuptools python3-pip
+        sudo apt-get install virtualenv
+
+
         sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
         sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.3/ubuntu xenial main'
         sudo apt-get update
         sudo apt-get install mariadb-server-10.3
+
+        export DEBIAN_FRONTEND=noninteractive
+        debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
+        debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
         
+
         sudo apt-get install libmysqlclient-dev
         sudo chmod 777 /etc/mysql/my.cnf
         sudo cat /etc/mysql/my.cnf
@@ -42,12 +54,21 @@ jobs:
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
+        
         sudo service mysql restart
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-        sudo python install.py --production --user Administrator
+        sudo apt-get install redis-server
+        sudo apt-get install curl
+        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        sudo apt install yarn
+
+        pip3 install frappe-bench 
+        bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
+
+
+
         cd frappe-bench
-        bench new-site example.com
+        bench new-site --db-password frappe --mariadb-root-password frappe --admin-password frappe example.com 
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
   
