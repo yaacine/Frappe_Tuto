@@ -68,6 +68,11 @@ jobs:
         pip3 install frappe-bench
         export PATH=$PATH:~/.local/bin
         bench --version
+        bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
+
+        cd frappe-bench
+        bench new-site example.com
+        bench get-app https://github.com/yaacine/Frappe_Tuto.git
+        bench --site example.com install-app library_management
         
-       
-        
+
