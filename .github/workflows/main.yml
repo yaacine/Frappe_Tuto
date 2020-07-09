@@ -67,16 +67,10 @@ jobs:
         pip install wheel
         pip3 install frappe-bench
         sudo ls -alt /home/runner/.local/bin
-        /home/runner/.local/bin/bench 
-        export PATH=$PATH:/home/runner/.local/bin
-        bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-
-
-
-
+        /home/runner/.local/bin/bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
+       
         cd frappe-bench
-        bench new-site --db-password frappe --mariadb-root-password frappe --admin-password frappe example.com 
-        bench get-app https://github.com/yaacine/Frappe_Tuto.git
-        bench --site example.com install-app library_management
-  
+
+        ls
+       
         
