@@ -59,7 +59,7 @@ jobs:
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
         
         echo "tail /etc/mysql/my.conf --yacine"
-        tail /etc/mysql/my.conf
+        tail /etc/mysql/my.cnf
         
         sudo service mysql restart
 
@@ -77,7 +77,7 @@ jobs:
 
         echo "bench install finished with success --yacine"
         cd frappe-bench
-
+        ls -alt
         bench new-site example.com --mariadb-root-password frappe  --db-password frappe --admin-password frappe --force
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
