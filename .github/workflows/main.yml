@@ -85,8 +85,9 @@ jobs:
         DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
         FLUSH PRIVILEGES;
         _EOF_
-
+        sudo systemctl start mariadb
         echo "bench install finished with success --yacine"
+
         cd frappe-bench
         ls -alt
         bench new-site example.com --mariadb-root-password frappe  --db-password frappe --admin-password frappe --force
