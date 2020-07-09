@@ -65,6 +65,8 @@ jobs:
         echo "############################# tail /etc/mysql/my.conf --yacine ##############@"
         cat /etc/mysql/my.cnf
         
+        echo "############################# tail /etc/mysql/my.conf --yacine ##############@"
+        cat /etc/mysql/debian.cnf
         
         sudo chmod 0444 /etc/mysql/my.cnf
         sudo service mysql restart
