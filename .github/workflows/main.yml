@@ -71,7 +71,7 @@ jobs:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
         cd frappe-bench
-        bench new-site example.com
+        bench new-site example.com --mariadb-root-password frappe  --db-password frappe
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
