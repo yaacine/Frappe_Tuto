@@ -57,7 +57,11 @@ jobs:
         sudo echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
-
+        
+        
+        sudo chmod 0444 /etc/mysql/my.cnf
+        
+        
         echo "tail /etc/mysql/my.conf --yacine"
         tail /etc/mysql/my.cnf
         
