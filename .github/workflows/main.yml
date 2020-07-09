@@ -35,16 +35,17 @@ jobs:
         sudo apt-get install python3-setuptools python3-pip
         sudo apt-get install virtualenv
 
+        export DEBIAN_FRONTEND=noninteractive
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
+        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
+        
 
         sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
         sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.3/ubuntu xenial main'
         sudo apt-get update
         sudo apt-get install mariadb-server-10.3
 
-        export DEBIAN_FRONTEND=noninteractive
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
-        
+       
 
         sudo apt-get install libmysqlclient-dev
         sudo chmod 777 /etc/mysql/my.cnf
