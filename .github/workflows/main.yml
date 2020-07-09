@@ -78,7 +78,14 @@ jobs:
         sudo systemctl stop mariadb
         
         echo "#############################################"
-        echo "         Maria Db configuration started         "
+        echo "         Maria Db configuration started      "
+        echo "#############################################"
+        
+        
+        sudo service mysql restart
+        
+         echo "#############################################"
+        echo "         restarted mysql service.            "
         echo "#############################################"
         sudo mysqld_safe --skip-grant-tables &
         
