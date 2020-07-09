@@ -67,8 +67,7 @@ jobs:
         pip install wheel
         pip3 install frappe-bench
         echo $PATH
-        sudo pwd
-        sudo echo “export PATH=’./.local/bin:$PATH’” >> ~/.bashrc
+        sudo echo “export PATH=’$HOME/.local/bin:$PATH’” >> ~/.bashrc
         echo $PATH
         sudo bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
