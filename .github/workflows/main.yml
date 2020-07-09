@@ -75,6 +75,17 @@ jobs:
         bench --version
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
 
+        sudo systemctl stop mariadb
+        sudo mysqld_safe --skip-grant-tables &
+        mysql -u root <<_EOF_
+        UPDATE mysql.user SET Password='frappe' WHERE User='root';
+        DELETE FROM mysql.user WHERE User='';
+        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+        DROP DATABASE IF EXISTS test;
+        DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+        FLUSH PRIVILEGES;
+        _EOF_
+
         echo "bench install finished with success --yacine"
         cd frappe-bench
         ls -alt
