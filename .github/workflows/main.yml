@@ -37,7 +37,7 @@ jobs:
         
         
     - name: installing MariaDB server
-      run:
+      run: |
         sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
         sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.3/ubuntu xenial main'
         sudo apt-get update
@@ -64,7 +64,7 @@ jobs:
         echo "#############################################"
 
     - name: getting other dependencies
-      run: 
+      run: |
         sudo apt-get install redis-server
         sudo apt-get install curl
         curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -82,7 +82,7 @@ jobs:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
         
     - name: setup the project
-      run:
+      run: |
         cd frappe-bench
         ls -alt
         bench new-site example.com --mariadb-root-password frappe --admin-password frappe
