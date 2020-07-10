@@ -59,6 +59,16 @@ jobs:
         sudo chmod 0444 /etc/mysql/my.cnf
         sudo service mysql restart
         
+        sudo systemctl stop mariadb
+        sudo mysqld_safe --skip-grant-tables &
+        mysql -u root <<<"
+          use mysql;
+          update user SET PASSWORD=PASSWORD("frappe") WHERE USER='root';
+          flush privileges;
+          exit
+        "
+        sudo systemctl start mariadb
+        
         echo "#############################################"
         echo "         Maria Db configuration done         "
         echo "#############################################"
