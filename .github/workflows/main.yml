@@ -59,14 +59,20 @@ jobs:
         sudo chmod 0444 /etc/mysql/my.cnf
         sudo service mysql restart
         
+        echo "################## restarted mysql ######################"
         sudo systemctl stop mariadb
+        echo "################## stopped mariadb ######################"
+        
         sudo mysqld_safe --skip-grant-tables &
+        echo "################## skip-grant-tables ######################"
+        
         mysql -u root <<<"
           use mysql;
           update user SET PASSWORD=PASSWORD("frappe") WHERE USER='root';
           flush privileges;
           exit
         "
+        echo "################## resetted password ######################"
         sudo systemctl start mariadb
         
         echo "#############################################"
