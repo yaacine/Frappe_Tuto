@@ -78,7 +78,7 @@ jobs:
         
  
     - name: initialize the frappe 
-      run:
+      run: |
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
         
     - name: setup the project
