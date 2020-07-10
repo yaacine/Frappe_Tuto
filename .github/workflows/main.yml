@@ -20,7 +20,7 @@ jobs:
       mariadb:
         image: mariadb:latest
         ports:
-          - 3306
+          - 3306:3306
         env:
           MYSQL_USER: user
           MYSQL_PASSWORD: frappe
@@ -80,7 +80,7 @@ jobs:
         cd frappe-bench
         ls -alt
         
-        bench new-site example.com --mariadb-root-password --db-host "127.0.0.1"  --db-port "$PORT" frappe --admin-password frappe
+        bench new-site example.com --mariadb-root-password --db-host "127.0.0.1"  --db-port  frappe --admin-password frappe
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
