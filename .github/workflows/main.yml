@@ -16,12 +16,33 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: frappe
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: frappe
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
+    
+    
+    - name: Verify MariaDB connection
+      env:
+          PORT: ${{ job.services.mariadb.ports[3306] }}
+      run: |
+          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+            sleep 1
+          done
+    
     # Runs a set of commands using the runners shell
     - name: Getting dependencies
       run: |
