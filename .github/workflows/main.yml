@@ -28,7 +28,7 @@ jobs:
     
     
     - name: Set up MariaDB
-    - uses: getong/mariadb-action@v1.1
+      uses: getong/mariadb-action@v1.1
       with:
         host port: 3306 
         container port: 3307
