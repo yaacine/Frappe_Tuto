@@ -61,17 +61,6 @@ jobs:
         
         echo "################## restarted mysql ######################"
         
-        sudo systemctl stop mariadb
-        
-        sudo mysqld_safe --skip-grant-tables &
-        mysql -u root <<<"
-          use mysql;
-          update user SET PASSWORD=PASSWORD("frappe") WHERE USER='root';
-          flush privileges;
-          exit
-        "
-        echo "################## resetted password ######################"
-        sudo systemctl start mariadb
         
         echo "#############################################"
         echo "         Maria Db configuration done         "
@@ -97,6 +86,7 @@ jobs:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
         cd frappe-bench
         ls -alt
+        sudo mysqld_safe --skip-grant-tables &
         bench new-site example.com --mariadb-root-password frappe --admin-password frappe
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
