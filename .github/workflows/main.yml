@@ -56,37 +56,7 @@ jobs:
         sudo apt-get install virtualenv
         sudo apt-get install libmysqlclient-dev
         
-        
-    - name: installing MariaDB server
-      run: |
-        sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-        sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.3/ubuntu xenial main'
-        sudo apt-get update
-        sudo apt-get install mariadb-server-10.3
-
-        export DEBIAN_FRONTEND=noninteractive
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
-        sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
-        
-        sudo chmod 777 /etc/mysql/my.cnf
-        sudo cat /etc/mysql/my.cnf
-        sudo echo "[mysqld]" >> /etc/mysql/my.cnf
-        sudo echo    "character-set-client-handshake = FALSE">> /etc/mysql/my.cnf
-        sudo echo    "character-set-server = utf8mb4">> /etc/mysql/my.cnf
-        sudo echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
-        sudo echo    "[mysql]">> /etc/mysql/my.cnf
-        sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
- 
-        sudo chmod 0444 /etc/mysql/my.cnf
-        sudo service mysql restart
-        
-        echo "################## restarted mysql ######################"
-        
-        
-        echo "#############################################"
-        echo "         Maria Db configuration done         "
-        echo "#############################################"
-
+      
     - name: getting other dependencies
       run: |
         sudo apt-get install redis-server
