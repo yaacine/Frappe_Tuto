@@ -81,13 +81,13 @@ jobs:
         export PATH=$PATH:~/.local/bin
         bench --version
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-        
-    - name: setup the project
-      run: |
         cd frappe-bench
         ls -alt
         bench new-site example.com --mariadb-root-password frappe --admin-password frappe
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
+        
+    
+        
         
 
