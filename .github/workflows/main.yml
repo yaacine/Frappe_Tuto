@@ -23,20 +23,21 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
+    - name: Getting dependencies
       run: |
         alias python=python3
         alias pip=pip3
         sudo apt install git python-dev redis-server 
         sudo apt-get install -y python-wheel
-        
         sudo apt-get install software-properties-common
         sudo apt-get install python3-dev
         sudo apt-get install python3-setuptools python3-pip
         sudo apt-get install virtualenv
-
+        sudo apt-get install libmysqlclient-dev
         
-
+        
+    - name: installing MariaDB server
+      run:
         sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
         sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ubuntu-tw.org/mirror/mariadb/repo/10.3/ubuntu xenial main'
         sudo apt-get update
@@ -46,10 +47,6 @@ jobs:
         sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password password frappe'
         sudo debconf-set-selections <<< 'mariadb-server-10.3 mysql-server/root_password_again password frappe'
         
-       
-
-        sudo apt-get install libmysqlclient-dev
-        
         sudo chmod 777 /etc/mysql/my.cnf
         sudo cat /etc/mysql/my.cnf
         sudo echo "[mysqld]" >> /etc/mysql/my.cnf
@@ -58,20 +55,16 @@ jobs:
         sudo echo    "collation-server = utf8mb4_unicode_ci">> /etc/mysql/my.cnf
         sudo echo    "[mysql]">> /etc/mysql/my.cnf
         sudo echo    "default-character-set = utf8mb4" >> /etc/mysql/my.cnf
-        
-        
-        
-        
-        
-        echo "############################# tail /etc/mysql/my.conf --yacine ##############@"
-        cat /etc/mysql/my.cnf
-        
-        echo "############################# tail /etc/mysql/my.conf --yacine ##############@"
-        sudo cat /etc/mysql/debian.cnf
-        
+ 
         sudo chmod 0444 /etc/mysql/my.cnf
         sudo service mysql restart
+        
+        echo "#############################################"
+        echo "         Maria Db configuration done         "
+        echo "#############################################"
 
+    - name: getting other dependencies
+      run: 
         sudo apt-get install redis-server
         sudo apt-get install curl
         curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -83,35 +76,16 @@ jobs:
         export PATH=$PATH:~/.local/bin
         bench --version
         
-        
-        sudo systemctl stop mariadb
-        
-        echo "#############################################"
-        echo "         Maria Db configuration started      "
-        echo "#############################################"
-        
-        
-        sudo service mysql restart
-        
-         echo "#############################################"
-        echo "         restarted mysql service.            "
-        echo "#############################################"
-       
-        
-        sudo systemctl start mariadb
-        echo "#############################################"
-        echo "         Maria Db configuration done         "
-        echo "#############################################"
-        
-       
-        echo "bench install finished with success --yacine"
-        
-        
+ 
+    - name: initialize the frappe 
+      run:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-
+        
+    - name: setup the project
+      run:
         cd frappe-bench
         ls -alt
-        bench new-site example.com --mariadb-root-password zk0iGBTpOwStME0q  --db-password zk0iGBTpOwStME0q --admin-password frappe --force
+        bench new-site example.com --mariadb-root-password frappe --admin-password frappe
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
