@@ -75,7 +75,7 @@ jobs:
         cd frappe-bench
         ls -alt
         
-        bench new-site example.com --mariadb-root-password frappe    --admin-password frappe
+        bench new-site example.com --mariadb-root-password frappe  --admin-password frappe --force
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
