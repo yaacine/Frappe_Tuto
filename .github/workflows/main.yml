@@ -16,38 +16,28 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
-
+    services:
+      mariadb:
+        image: mariadb:10.3
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: frappe
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: frappe
+        options: -v ${{ github.workspace }}/frappe_conf/my.cnf:/etc/mysql/my.cnf  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  
+       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
+    
 
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
     
     
-    - name: Set up MariaDB
-      uses: getong/mariadb-action@v1.1
-      with:
-        host port: 3306 
-        container port: 3307
-        character set server: 'utf8mb4' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-        collation server: 'utf8mb4_unicode_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
-        mysql root password: 'frappe' # Required if "mysql user" is empty, default is empty. The root superuser password
-        mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-        mysql password: 'frappe' # Required if "mysql user" exists. The password for the "mysql user"
-        character-set-client-handshake: 'FALSE'
-        mysql database: 'test'
-        
-        
-    - name: Verify MariaDB connection
-      env:
-          PORT: ${{ job.services.mariadb.ports[3306] }}
-      run: |
-          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
-            sleep 1
-          done
     
     # Runs a set of commands using the runners shell
     - name: Getting dependencies
