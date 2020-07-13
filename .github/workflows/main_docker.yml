@@ -62,7 +62,7 @@ jobs:
       run: |
            docker exec library_frappe_1 sudo mkdir /reports
            docker exec library_frappe_1 sudo chmod 777 /reports
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost run-tests --app frappe library_management --junit-xml-output=/reports/junit_test.xml
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
     
     - name: create docker image from working app
       run : |
