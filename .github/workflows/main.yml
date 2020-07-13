@@ -87,7 +87,6 @@ jobs:
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
         cd frappe-bench
 
-        bench set-mariadb-host mariadb
         ls -alt
         
         bench new-site example.com --mariadb-root-password frappe  --admin-password frappe --no-mariadb-socket
