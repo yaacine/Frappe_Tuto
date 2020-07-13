@@ -40,7 +40,8 @@ jobs:
     
     - name: append default system my.cnf file
       run: |
-          touch /etc/mysql/conf.d/my.cnf
+          sudo chmod 777 /etc/mysql/conf.d/
+          sudo touch /etc/mysql/conf.d/my.cnf
           sudo chmod 777 /etc/mysql/conf.d/my.cnf
           sudo echo "[mysqld] " >> /etc/mysql/conf.d/my.cnf
           sudo echo "character-set-client-handshake = FALSE " >> /etc/mysql/conf.d/my.cnf
