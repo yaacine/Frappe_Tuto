@@ -26,9 +26,9 @@ jobs:
           MYSQL_PASSWORD: frappe
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: frappe
-        options:  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
-        volumes:
-          - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
+        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf /etc/mysql/my.cnf  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
+      #  volumes:
+      #    - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
     
         # -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf
     # --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake = FALSE
@@ -36,6 +36,16 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    
+    - name: append default system my.cnf file
+      run: |
+          echo "[mysqld] " >> /etc/mysql/my.cnf
+          echo "character-set-client-handshake = FALSE " >> /etc/mysql/my.cnf
+          echo "character-set-server = utf8mb4 " >> /etc/mysql/my.cnf
+          echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/my.cnf
+          echo "[mysql] " >> /etc/mysql/my.cnf
+          echo "default-character-set = utf8mb4  " >> /etc/mysql/my.cnf
+          cat /etc/mysql/my.cnf
     
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
