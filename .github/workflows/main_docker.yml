@@ -33,8 +33,9 @@ jobs:
            cd frappe_docker
            cd .devcontainer
            docker-compose --project-name library up -d 
-           docker exec library_frappe_1 pwd 
-           docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 frappe-bench
+           docker exec -it library_frappe_1 /bin/bran
+           pwd
+      #docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 frappe-bench
         
     
         

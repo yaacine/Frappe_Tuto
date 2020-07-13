@@ -40,14 +40,14 @@ jobs:
     
     - name: append default system my.cnf file
       run: |
-          echo "[mysqld] " >> /etc/mysql/my.cnf
-          echo "character-set-client-handshake = FALSE " >> /etc/mysql/my.cnf
-          echo "character-set-server = utf8mb4 " >> /etc/mysql/my.cnf
-          echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/my.cnf
-          echo "[mysql] " >> /etc/mysql/my.cnf
-          echo "default-character-set = utf8mb4  " >> /etc/mysql/my.cnf
+          sudo echo "[mysqld] " >> /etc/mysql/my.cnf
+          sudo echo "character-set-client-handshake = FALSE " >> /etc/mysql/my.cnf
+          sudo echo "character-set-server = utf8mb4 " >> /etc/mysql/my.cnf
+          sudo echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/my.cnf
+          sudo echo "[mysql] " >> /etc/mysql/my.cnf
+          sudo echo "default-character-set = utf8mb4  " >> /etc/mysql/my.cnf
           echo "##################### content of my.cnf  ######################"
-          cat /etc/mysql/my.cnf
+          sudo cat /etc/mysql/my.cnf
     
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
