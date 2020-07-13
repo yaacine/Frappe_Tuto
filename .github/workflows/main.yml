@@ -26,7 +26,7 @@ jobs:
           MYSQL_PASSWORD: frappe
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: frappe
-        options: -v ${{ github.workspace }}/frappeConf/:/etc/mysql/conf.d/ --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
+        options: -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
     # -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf
     # --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake = FALSE
     # Steps represent a sequence of tasks that will be executed as part of the job
