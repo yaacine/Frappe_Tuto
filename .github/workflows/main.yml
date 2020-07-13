@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ dev ]
 
-    
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mariadb:
-        image: mariadb:latest --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake = FALSE
+        image: mariadb:latest 
         ports:
           - 3306:3306
         env:
