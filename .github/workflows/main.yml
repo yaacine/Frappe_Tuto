@@ -6,10 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ dev ]
+    branches: [ master ]
   pull_request:
-    branches: [ dev ]
-
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mariadb:
-        image: mariadb:10.3 
+        image: mariadb:latest
         ports:
           - 3306:3306
         env:
@@ -35,14 +34,14 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     
+
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
     
-
-    - name: Restart mariadb
-      uses: docker://docker
-      with:
-        args: docker restart mariadb
+      - name: Restart mariadb
+        uses: docker://docker
+        with:
+          args: docker restart mariadb
 
 
     - name: Verify MariaDB connection
@@ -52,9 +51,6 @@ jobs:
            while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
              sleep 1
            done    
-        
-
-    
     
     # Runs a set of commands using the runners shell
     - name: Getting dependencies
@@ -91,13 +87,13 @@ jobs:
         bench --version
         bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
         cd frappe-bench
+
+        bench set-mariadb-host mariadb
         ls -alt
         
-        bench new-site example.com --mariadb-root-password frappe  --admin-password frappe --no-mariadb-socket --force
+        bench new-site example.com --mariadb-root-password frappe --db-port "$PORT"  --admin-password frappe --no-mariadb-socket
         bench get-app https://github.com/yaacine/Frappe_Tuto.git
         bench --site example.com install-app library_management
         
     
         
-        
-
