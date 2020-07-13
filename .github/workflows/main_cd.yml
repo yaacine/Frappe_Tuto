@@ -38,7 +38,7 @@ jobs:
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
     
-      - name: Restart mariadb
+    - name: Restart mariadb
       uses: docker://docker
       with:
         args: docker restart mariadb
