@@ -26,8 +26,8 @@ jobs:
           MYSQL_PASSWORD: frappe
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: frappe
-        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf  --name mariadb
-      #--health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  
+        options: -v /etc/mysql/conf.d/:/etc/mysql/conf.d/  --name mariadb --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3 
+      # 
       #  volumes:
       #    - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
     
@@ -40,15 +40,17 @@ jobs:
     
     - name: append default system my.cnf file
       run: |
-          sudo chmod 777 /etc/mysql/my.cnf
-          sudo echo "[mysqld] " >> /etc/mysql/my.cnf
-          sudo echo "character-set-client-handshake = FALSE " >> /etc/mysql/my.cnf
-          sudo echo "character-set-server = utf8mb4 " >> /etc/mysql/my.cnf
-          sudo echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/my.cnf
-          sudo echo "[mysql] " >> /etc/mysql/my.cnf
-          sudo echo "default-character-set = utf8mb4  " >> /etc/mysql/my.cnf
-          echo "##################### content of my.cnf  ######################"
-          sudo chmod 644 /etc/mysql/my.cnf
+          touch /etc/mysql/conf.d/my.cnf
+          sudo chmod 777 /etc/mysql/conf.d/my.cnf
+          sudo echo "[mysqld] " >> /etc/mysql/conf.d/my.cnf
+          sudo echo "character-set-client-handshake = FALSE " >> /etc/mysql/conf.d/my.cnf
+          sudo echo "character-set-server = utf8mb4 " >> /etc/mysql/conf.d/my.cnf
+          sudo echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/conf.d/my.cnf
+          sudo echo "[mysql] " >> /etc/mysql/conf.d/my.cnf
+          sudo echo "default-character-set = utf8mb4  " >> /etc/mysql/conf.d/my.cnf
+          echo "##################### /etc/mysql/conf.d/my.cnf  ######################"
+          sudo chmod 644 /etc/mysql/conf.d/my.cnf
+          sudo cat /etc/mysql/conf.d/my.cnf
           sudo cat /etc/mysql/my.cnf
           
     - name: Shutdown Ubuntu MySQL (SUDO)
