@@ -26,7 +26,8 @@ jobs:
           MYSQL_PASSWORD: frappe
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: frappe
-        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
+        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf  
+      #--health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
       #  volumes:
       #    - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
     
