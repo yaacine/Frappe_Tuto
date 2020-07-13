@@ -42,7 +42,8 @@ jobs:
 
            docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+           echo "################## Developer mode on ####################"
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
     
@@ -50,8 +51,11 @@ jobs:
       run: |
            docker exec library_frappe_1 sudo mkdir /reports
            docker exec library_frappe_1 sudo chmod 777 /reports
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench bench --site mysite.localhost run-tests --app frappe library_management --junit-xml-output=/reports/junit_test.xml
     
+    - name: create docker image from working app
+      run : |
+            docker commit 
 
         
