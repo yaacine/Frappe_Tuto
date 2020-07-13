@@ -26,7 +26,7 @@ jobs:
           MYSQL_PASSWORD: frappe
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: frappe
-        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf /etc/mysql/my.cnf  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
+        options: -v /etc/mysql/my.cnf:/etc/mysql/my.cnf  --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3  --name mariadb
       #  volumes:
       #    - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
     
@@ -45,6 +45,7 @@ jobs:
           echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/my.cnf
           echo "[mysql] " >> /etc/mysql/my.cnf
           echo "default-character-set = utf8mb4  " >> /etc/mysql/my.cnf
+          echo "##################### content of my.cnf  ######################"
           cat /etc/mysql/my.cnf
     
     - name: Shutdown Ubuntu MySQL (SUDO)
