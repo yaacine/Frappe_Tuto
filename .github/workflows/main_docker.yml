@@ -33,11 +33,26 @@ jobs:
            cd frappe_docker
            cd .devcontainer
            docker-compose --project-name library up -d 
-          #docker exec library_frappe_1 chmod 777 .
+           docker exec library_frappe_1 sudo chmod 777 .
            docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 --python /usr/bin/python3.7 frappe-bench
+           docker exec library_frappe_1 cd frappe-bench
            docker exec library_frappe_1 bench set-mariadb-host mariadb
            docker exec library_frappe_1 bench set-redis-cache-host redis-cache:6379
            docker exec library_frappe_1 bench set-redis-queue-host redis-queue:6379
            docker exec library_frappe_1 bench set-redis-socketio-host redis-socketio:6379
-      
+
+           docker exec library_frappe_1 sed -i '/redis/d' ./Procfile
+           docker exec library_frappe_1 bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+           docker exec library_frappe_1 bench --site mysite.localhost set-config developer_mode 1
+           docker exec library_frappe_1 bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
+           docker exec library_frappe_1 bench --site mysite.localhost install-app library_management
+    
+    - name:  Unit tests
+      run: |
+           docker exec library_frappe_1 sudo mkdir /reports
+           docker exec library_frappe_1 sudo chmod 777 /reports
+           docker exec library_frappe_1 bench --site mysite.localhost set-config allow_tests true
+           docker exec library_frappe_1 bench bench --site mysite.localhost run-tests --app frappe library_management --junit-xml-output=/reports/junit_test.xml
+    
+
         
