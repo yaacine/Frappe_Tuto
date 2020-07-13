@@ -28,6 +28,7 @@ jobs:
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
     
     - name:  install frappe using docker compose
+      continue-on-error: true
       run: |
            git clone https://github.com/frappe/frappe_docker.git
            cd frappe_docker
@@ -42,17 +43,26 @@ jobs:
 
            docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
-           echo "################## Developer mode on ####################"
+  
+           
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
-    
+           echo "################## Enabeling Developer mode  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+
+
+    - name:  Enabeling tests
+      continue-on-error: true
+      run: |
+           echo "##################  Enabeling tests  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
+
+
     - name:  Unit tests
       run: |
            docker exec library_frappe_1 sudo mkdir /reports
            docker exec library_frappe_1 sudo chmod 777 /reports
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench bench --site mysite.localhost run-tests --app frappe library_management --junit-xml-output=/reports/junit_test.xml
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost run-tests --app frappe library_management --junit-xml-output=/reports/junit_test.xml
     
     - name: create docker image from working app
       run : |
