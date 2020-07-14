@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI_DOCKER
+name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -45,7 +45,7 @@ jobs:
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
   
            
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app --branch master library_management https://github.com/yaacine/Frappe_Tuto.git
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
           
 
@@ -77,7 +77,7 @@ jobs:
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general
-        SLACK_COLOR: '#3278BD'
+        SLACK_COLOR: '#f32013'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
         SLACK_MESSAGE:  'New push Faild in developement integration '
         SLACK_TITLE: New push successfully integrated
@@ -89,7 +89,7 @@ jobs:
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general
-        SLACK_COLOR: '#3278BD'
+        SLACK_COLOR: '#A3A3A3'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
         SLACK_MESSAGE: 'New push successfully integrated :rocket:'
         SLACK_TITLE: New push successfully integrated
