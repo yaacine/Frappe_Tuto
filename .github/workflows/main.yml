@@ -57,10 +57,10 @@ jobs:
 
 
     - name:  Enabeling tests
-          continue-on-error: true
-          run: |
-               echo "##################  Enabeling tests  ####################"
-               docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
+      continue-on-error: true
+      run: |
+           echo "##################  Enabeling tests  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
 
 
     - name:  Unit tests
