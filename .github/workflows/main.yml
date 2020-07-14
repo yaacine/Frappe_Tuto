@@ -149,8 +149,7 @@ jobs:
             docker exec library_frappe_1 sudo mkdir /reports
             docker exec library_frappe_1 sudo chmod 777 /reports
             docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
- 
-         docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
+            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
  
  
   
