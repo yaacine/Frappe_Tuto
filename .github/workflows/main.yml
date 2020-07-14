@@ -71,13 +71,13 @@ jobs:
     
     - name: create docker image from working app
       run : |
-            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container
+            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
 
 
     - name: push image to dockerHub
       run : |
             docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PWD }}
-            docker push  ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container
+            docker push  ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
 
 
     - name: Slack Deployement Failure Notification
