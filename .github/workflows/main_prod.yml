@@ -162,17 +162,17 @@ jobs:
           SLACK_USERNAME: Librarian_app
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-    - name: Slack Deployement Success Notification
-      if: success()
-      uses: rtCamp/action-slack-notify@master
-      env:
-        SLACK_CHANNEL: general
-        SLACK_COLOR: '#2eb887'
-        SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
-        SLACK_TITLE: New push successfully deployed ${{ github.sha }}
-        SLACK_USERNAME: Librarian_app
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
- 
+      - name: Slack Deployement Success Notification
+        if: success()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_CHANNEL: general
+          SLACK_COLOR: '#2eb887'
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
+          SLACK_TITLE: New push successfully deployed ${{ github.sha }}
+          SLACK_USERNAME: Librarian_app
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
   
+    
     
