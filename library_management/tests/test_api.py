@@ -4,7 +4,7 @@ import unittest
 import requests
 import ast
 import os
-host= "http://library:8002"
+host= "http://0.0.0.0:8000"
 
 
 class TestLogin(unittest.TestCase):
