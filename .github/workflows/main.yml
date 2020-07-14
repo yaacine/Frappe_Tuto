@@ -105,8 +105,6 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
 
-jobs:
- 
   deploy:
     runs-on: ubuntu-latest
     steps:
