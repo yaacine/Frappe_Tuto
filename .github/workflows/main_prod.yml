@@ -68,7 +68,23 @@ jobs:
            docker exec library_frappe_1 sudo mkdir /reports
            docker exec library_frappe_1 sudo chmod 777 /reports
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
+         
+    - name:  Start server for testing
+      run: |       
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench  start
     
+
+    - name: Sleep for 30 seconds to let server start
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '30s'
+
+
+    - name:  Api level testing
+      run: |       
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench  run-tests  --module library_management.tests.test_api
+ 
+           
     - name: create docker image from working app
       run : |
             docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
