@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CI_DOCKER
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -16,102 +16,90 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    services:
-      mariadb:
-        image: mariadb:latest
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: frappe
-          MYSQL_DATABASE: test
-          MYSQL_ROOT_PASSWORD: frappe
-        options: -v /etc/mysql/conf.d/:/etc/mysql/conf.d/  --name mariadb --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3 
-      # 
-      #  volumes:
-      #    - /etc/mysql/my.cnf:${{ github.workspace }}/my.cnf
     
-        # -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf
+    # -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf
     # --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake = FALSE
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     
-    - name: append default system my.cnf file
-      run: |
-          sudo chmod 777 /etc/mysql/conf.d/
-          sudo touch /etc/mysql/conf.d/my.cnf
-          sudo chmod 777 /etc/mysql/conf.d/my.cnf
-          sudo echo "[mysqld] " >> /etc/mysql/conf.d/my.cnf
-          sudo echo "character-set-client-handshake = FALSE " >> /etc/mysql/conf.d/my.cnf
-          sudo echo "character-set-server = utf8mb4 " >> /etc/mysql/conf.d/my.cnf
-          sudo echo "collation-server = utf8mb4_unicode_ci " >> /etc/mysql/conf.d/my.cnf
-          sudo echo "[mysql] " >> /etc/mysql/conf.d/my.cnf
-          sudo echo "default-character-set = utf8mb4  " >> /etc/mysql/conf.d/my.cnf
-          echo "##################### /etc/mysql/conf.d/my.cnf  ######################"
-          sudo chmod 644 /etc/mysql/conf.d/my.cnf
-          sudo cat /etc/mysql/conf.d/my.cnf
-          sudo cat /etc/mysql/my.cnf
-          
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
     
-    - name: Restart mariadb
-      uses: docker://docker
-      with:
-        args: docker restart mariadb
-
-
-    - name: Verify MariaDB connection
-      env:
-          PORT: ${{ job.services.mariadb.ports[3306] }}
+    - name:  install frappe using docker compose
       run: |
-           while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
-             sleep 1
-           done    
+           git clone https://github.com/frappe/frappe_docker.git
+           cd frappe_docker
+           cd .devcontainer
+           docker-compose --project-name library up -d 
+           docker exec  library_frappe_1 sudo chmod 777 .
+           docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 --python /usr/bin/python3.7 frappe-bench
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-mariadb-host mariadb
+           docker exec -w /workspace/development/frappe-bench library_frappe_1   bench set-redis-cache-host redis-cache:6379
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-queue-host redis-queue:6379
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-socketio-host redis-socketio:6379
+
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+  
+           
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
+           
+
+    - name:  Enabeling developer mode
+      continue-on-error: true
+      run: |
+           echo "################## Enabeling Developer mode  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+
+
+
+    - name:  Enabeling tests
+          continue-on-error: true
+          run: |
+              echo "##################  Enabeling tests  ####################"
+              docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
+
+
+    - name:  Unit tests
+      run: |
+           docker exec library_frappe_1 sudo mkdir /reports
+           docker exec library_frappe_1 sudo chmod 777 /reports
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
     
-    # Runs a set of commands using the runners shell
-    - name: Getting dependencies
-      run: |
-        alias python=python3
-        alias pip=pip3
-        sudo apt install git python-dev redis-server 
-        sudo apt-get install -y python-wheel
-        sudo apt-get install software-properties-common
-        sudo apt-get install python3-dev
-        sudo apt-get install python3-setuptools python3-pip
-        sudo apt-get install virtualenv
-        sudo apt-get install libmysqlclient-dev
-        
-      
-    - name: getting other dependencies
-      run: |
-        sudo apt-get install redis-server
-        sudo apt-get install curl
-        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        sudo apt install yarn
-        pip3 install wheel
-        pip install wheel
-        
-        
- 
-    - name: initialize the frappe 
-      env:
-          PORT: ${{ job.services.mariadb.ports[3306] }}
-      run: |
-        pip3 install frappe-bench
-        export PATH=$PATH:~/.local/bin
-        bench --version
-        bench init --frappe-branch version-12 --python /usr/bin/python3.6 frappe-bench
-        cd frappe-bench
+    - name: create docker image from working app
+      run : |
+            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container
 
-        ls -alt
-        
-        bench new-site example.com --mariadb-root-password frappe  --admin-password frappe --no-mariadb-socket
-        bench get-app https://github.com/yaacine/Frappe_Tuto.git
-        bench --site example.com install-app library_management
-        
-    
-        
+
+    - name: push image to dockerHub
+      run : |
+            docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PWD }}
+            docker push  ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container
+
+
+    - name: Slack Deployement Failure Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#3278BD'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: ! 'New push Faild in production Deployement,  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_TITLE: New push successfully deployed
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Slack Deployement Success Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#3278BD'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: ! 'New push success in production Deployement :rocket:  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_TITLE: New push successfully deployed
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

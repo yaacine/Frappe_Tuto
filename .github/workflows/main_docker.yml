@@ -47,8 +47,16 @@ jobs:
            
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
+          
+
+
+    
+    - name:  Enabeling developer mode
+      continue-on-error: true
+      run: |
            echo "################## Enabeling Developer mode  ####################"
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+
 
 
     - name:  Enabeling tests
@@ -64,8 +72,26 @@ jobs:
            docker exec library_frappe_1 sudo chmod 777 /reports
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
     
-    - name: create docker image from working app
-      run : |
-            docker commit 
+    - name: Slack Failure Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#3278BD'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: ! 'New push Faild in developement integration,  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_TITLE: New push successfully integrated
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-        
+    - name: Slack Success Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#3278BD'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: ! 'New push successfully integrated :rocket:  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_TITLE: New push successfully integrated
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
