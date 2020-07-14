@@ -73,7 +73,7 @@ jobs:
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
     
     - name: Slack Failure Notification
-      if: success()
+      if: failure() || cancelled()
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general

@@ -81,13 +81,13 @@ jobs:
 
 
     - name: Slack Deployement Failure Notification
-      if: success()
+      if: failure() || cancelled()
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general
         SLACK_COLOR: '#3278BD'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: ! 'New push Faild in production Deployement,  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_MESSAGE: 'New push Faild in production Deployement,'
         SLACK_TITLE: New push successfully deployed
         SLACK_USERNAME: Librarian_app
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -99,7 +99,7 @@ jobs:
         SLACK_CHANNEL: general
         SLACK_COLOR: '#3278BD'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: ! 'New push success in production Deployement :rocket:  %{$(git rev-parse --short "$GITHUB_SHA")}  %{${GITHUB_REF##*/} }'
+        SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
         SLACK_TITLE: New push successfully deployed
         SLACK_USERNAME: Librarian_app
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
