@@ -1,0 +1,178 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CD
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # -v ${{ github.workspace }}/my.cnf:/etc/mysql/my.cnf
+    # --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake = FALSE
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    
+    - name: Shutdown Ubuntu MySQL (SUDO)
+      run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+    
+    - name:  install frappe using docker compose
+      run: |
+           git clone https://github.com/frappe/frappe_docker.git
+           cd frappe_docker
+           cd .devcontainer
+           docker-compose --project-name library up -d 
+           docker exec  library_frappe_1 sudo chmod 777 .
+           docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 --python /usr/bin/python3.7 frappe-bench
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-mariadb-host mariadb
+           docker exec -w /workspace/development/frappe-bench library_frappe_1   bench set-redis-cache-host redis-cache:6379
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-queue-host redis-queue:6379
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-socketio-host redis-socketio:6379
+
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+  
+           
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
+           
+
+    - name:  Enabeling developer mode
+      continue-on-error: true
+      run: |
+           echo "################## Enabeling Developer mode  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+
+
+
+    - name:  Enabeling tests
+      continue-on-error: true
+      run: |
+           echo "##################  Enabeling tests  ####################"
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
+
+
+    - name:  Unit tests
+      run: |
+           docker exec library_frappe_1 sudo mkdir /reports
+           docker exec library_frappe_1 sudo chmod 777 /reports
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
+    
+    - name: create docker image from working app
+      run : |
+            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
+
+
+    - name: push image to dockerHub
+      run : |
+            docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PWD }}
+            docker push  ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
+
+
+    - name: Slack Image Creation Failure Notification
+      if: failure() || cancelled()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#f32013'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'Image Creation Faild in production '
+        SLACK_TITLE: Image Creation Faild ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Slack Image Creation Success Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#2eb887'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'Image Creation success in production:rocket: '
+        SLACK_TITLE: Image Creation deployed ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Library App To production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.WEB_STAGE_HOST }}
+          username: ${{ secrets.WEB_STAGE_USER }}
+          key: ${{ secrets.WEB_STAGE_KEY }}
+          port: ${{ secrets.WEB_STAGE_PORT }}
+          script_stop: true
+          script: |
+            cd ~/frappe_dev/
+            git clone https://github.com/frappe/frappe_docker.git
+            cd frappe_docker
+            cd .devcontainer
+            docker-compose --project-name library up -d 
+            docker exec  library_frappe_1 sudo chmod 777 .
+            docker exec library_frappe_1 bench init --skip-redis-config-generation --frappe-branch version-12 --python /usr/bin/python3.7 frappe-bench
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-mariadb-host mariadb
+            docker exec -w /workspace/development/frappe-bench library_frappe_1   bench set-redis-cache-host redis-cache:6379
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-queue-host redis-queue:6379
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-socketio-host redis-socketio:6379
+
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+   
+            
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app --branch master library_management  https://github.com/$GITHUB_REPOSITORY.git
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost install-app library_management
+            
+            echo "################## Enabeling Developer mode  ####################"
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+ 
+ 
+            echo "##################  Enabeling tests  ####################"
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench --site mysite.localhost set-config allow_tests true > /dev/null
+ 
+ 
+            docker exec library_frappe_1 sudo mkdir /reports
+            docker exec library_frappe_1 sudo chmod 777 /reports
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
+            docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
+          
+
+      - name: Slack Deployement Failure Notification
+      if: failure() || cancelled()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#f32013'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'New push Faild in production Deployement,'
+        SLACK_TITLE: New Deployement Faild ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Slack Deployement Success Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#2eb887'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
+        SLACK_TITLE: New push successfully deployed ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+ 
+  
+    

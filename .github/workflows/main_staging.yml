@@ -6,9 +6,9 @@ name: CD
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ staging ]
   pull_request:
-    branches: [ master ]
+    branches: [ staging ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -80,27 +80,27 @@ jobs:
             docker push  ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
 
 
-    - name: Slack Deployement Failure Notification
+    - name: Slack Image Creation Failure Notification
       if: failure() || cancelled()
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general
         SLACK_COLOR: '#f32013'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: 'New push Faild in production Deployement,'
-        SLACK_TITLE: New Deployement Faild ${{ github.sha }}
+        SLACK_MESSAGE: 'Image Creation Faild in production '
+        SLACK_TITLE: Image Creation Faild ${{ github.sha }}
         SLACK_USERNAME: Librarian_app
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-    - name: Slack Deployement Success Notification
+    - name: Slack Image Creation Success Notification
       if: success()
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_CHANNEL: general
-        SLACK_COLOR: '#A3A3A3'
+        SLACK_COLOR: '#2eb887'
         SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
-        SLACK_TITLE: New push successfully deployed ${{ github.sha }}
+        SLACK_MESSAGE: 'Image Creation success in production:rocket: '
+        SLACK_TITLE: Image Creation deployed ${{ github.sha }}
         SLACK_USERNAME: Librarian_app
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -148,7 +148,31 @@ jobs:
             docker exec library_frappe_1 sudo chmod 777 /reports
             docker exec -w /workspace/development/frappe-bench library_frappe_1  bench run-tests --app library_management 
             docker commit library_frappe_1 ${{ secrets.DOCKERHUB_USER }}/myworking_mibrary_container:${{ github.sha }}
- 
+          
+
+      - name: Slack Deployement Failure Notification
+      if: failure() || cancelled()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#f32013'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'New push Faild in production Deployement,'
+        SLACK_TITLE: New Deployement Faild ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Slack Deployement Success Notification
+      if: success()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: general
+        SLACK_COLOR: '#2eb887'
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: 'New push success in production Deployement :rocket: '
+        SLACK_TITLE: New push successfully deployed ${{ github.sha }}
+        SLACK_USERNAME: Librarian_app
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
  
   
     
