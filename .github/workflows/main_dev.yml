@@ -74,7 +74,7 @@ jobs:
            
     - name:  Start server for testing
       run: |       
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench  start
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench  start &
     
 
     - name: Sleep for 30 seconds to let server start
