@@ -41,7 +41,7 @@ jobs:
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-socketio-host redis-socketio:6379
 
            docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
-           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+           docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password frappe --no-mariadb-socket
   
            
            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app  library_management https://github.com/yaacine/Frappe_Tuto.git
@@ -130,7 +130,7 @@ jobs:
             docker exec -w /workspace/development/frappe-bench library_frappe_1  bench set-redis-socketio-host redis-socketio:6379
 
             docker exec -w /workspace/development/frappe-bench library_frappe_1  sed -i '/redis/d' ./Procfile
-            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
+            docker exec -w /workspace/development/frappe-bench library_frappe_1  bench new-site mysite.localhost --mariadb-root-password 123 --admin-password frappe --no-mariadb-socket
    
             
             docker exec -w /workspace/development/frappe-bench library_frappe_1  bench get-app --branch master library_management  https://github.com/$GITHUB_REPOSITORY.git
