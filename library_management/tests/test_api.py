@@ -20,7 +20,7 @@ class TestLogin(unittest.TestCase):
         user ='Administrator'
         # todo: hide password secret 
         # correct_password = os.environ['HOME']
-        pload = {'usr':user,'pwd':'admin'}
+        pload = {'usr':user,'pwd':'frappe'}
         r =requests.post(host+'/api/method/login' , data=pload)
         content = ast.literal_eval(r.text)
         message= str(content["message"])
