@@ -51,7 +51,7 @@ jobs:
     - name:  Add environnement variables to frappe container (username & password & appname & sitename)
       run: |
            echo "################## Add environnement variables  ####################"
-           docker exec library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
+          #docker exec library_frappe_1  bench --site mysite.localhost set-config developer_mode 1 > /dev/null
 
     - name:  Enabeling developer mode
       continue-on-error: true
