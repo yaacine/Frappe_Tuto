@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: frappe-api
+  description: Retrieve item details
+spec:
+  type: openapi
+  lifecycle: production
+  owner: gy_zidelmal@esi.dz
+  definition: |
+    openapi: "3.0.0"
+    info:
+      version: 1.0.0
+      title: Frappe API
+      license:
+        name: MIT
+    servers:
+      - url: http://item.leam.net/v1
+    paths:
+      /items:
+        get:
+          summary: List all item
+        post:
+          create an item
+    ...
