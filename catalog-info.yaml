@@ -3,6 +3,8 @@ kind: API
 metadata:
   name: frappe-api
   description: Retrieve item details
+  annotations:
+    backstage.io/techdocs-ref: value
 spec:
   type: openapi
   lifecycle: production
